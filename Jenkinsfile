@@ -18,17 +18,17 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                bat "kubectl set image deployment/user-deployment user-container=user-service:%IMAGE_TAG%"
-                bat "kubectl set image deployment/product-deployment product-container=product-service:%IMAGE_TAG%"
-                bat "kubectl set image deployment/order-deployment order-container=order-service:%IMAGE_TAG%"
+                bat "kubectl set image deployment/user-service user-container=user-service:{%IMAGE_TAG%}"
+                bat "kubectl set image deployment/product-service product-container=product-service:{%IMAGE_TAG%}"
+                bat "kubectl set image deployment/order-service order-container=order-service:{%IMAGE_TAG%}"
             }
         }
 
         stage('Verify Deployment') {
             steps {
-                bat "kubectl rollout status deployment/user-deployment"
-                bat "kubectl rollout status deployment/product-deployment"
-                bat "kubectl rollout status deployment/order-deployment"
+                bat "kubectl rollout status deployment/user-service"
+                bat "kubectl rollout status deployment/product-service"
+                bat "kubectl rollout status deployment/order-service"
             }
         }
     }
