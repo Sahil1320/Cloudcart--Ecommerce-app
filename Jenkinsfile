@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKERHUB = "sahilkr1302"
         IMAGE_TAG = "${BUILD_NUMBER}"
+        KUBECONFIG = "C:\\Users\\91700\\.kube\\config"
     }
 
     stages {
