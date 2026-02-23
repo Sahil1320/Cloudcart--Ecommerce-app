@@ -2,25 +2,51 @@ pipeline {
     agent any
 
     environment {
-        KUBECONFIG = 'C:\\Users\\91700\\.kube\\config'
+        DOCKERHUB = "sahilkri302"
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
     stages {
 
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Build Docker Images') {
             steps {
-                bat "docker build -t user-service:%IMAGE_TAG% user-service"
-                bat "docker build -t product-service:%IMAGE_TAG% product-service"
-                bat "docker build -t order-service:%IMAGE_TAG% order-service"
+                bat "docker build -t %DOCKERHUB%/user-service:%IMAGE_TAG% user-service"
+                bat "docker build -t %DOCKERHUB%/product-service:%IMAGE_TAG% product-service"
+                bat "docker build -t %DOCKERHUB%/order-service:%IMAGE_TAG% order-service"
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerHub',   
+                    usernameVariable: 'USERNAME',
+                    passwordVariable: 'PASSWORD'
+                )]) {
+                    bat 'echo %PASSWORD% | docker login -u %USERNAME% --password-stdin'
+                }
+            }
+        }
+
+        stage('Push Images to Docker Hub') {
+            steps {
+                bat "docker push %DOCKERHUB%/user-service:%IMAGE_TAG%"
+                bat "docker push %DOCKERHUB%/product-service:%IMAGE_TAG%"
+                bat "docker push %DOCKERHUB%/order-service:%IMAGE_TAG%"
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                bat "kubectl set image deployment/user-service user-service=user-service:{%IMAGE_TAG%}"
-                bat "kubectl set image deployment/product-service product-service=product-service:{%IMAGE_TAG%}"
-                bat "kubectl set image deployment/order-service order-service=order-service:{%IMAGE_TAG%}"
+                bat "kubectl set image deployment/user-service user-service=%DOCKERHUB%/user-service:%IMAGE_TAG%"
+                bat "kubectl set image deployment/product-service product-service=%DOCKERHUB%/product-service:%IMAGE_TAG%"
+                bat "kubectl set image deployment/order-service order-service=%DOCKERHUB%/order-service:%IMAGE_TAG%"
             }
         }
 
@@ -30,6 +56,15 @@ pipeline {
                 bat "kubectl rollout status deployment/product-service"
                 bat "kubectl rollout status deployment/order-service"
             }
+        }
+    }
+
+    post {
+        success {
+            echo "🚀 Deployment Successful!"
+        }
+        failure {
+            echo "❌ Deployment Failed!"
         }
     }
 }

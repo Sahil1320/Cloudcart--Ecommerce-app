@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: user-service:latest
-          imagePullPolicy: Never
+          image: sahilkr1302/user-service:test
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
           resources:
