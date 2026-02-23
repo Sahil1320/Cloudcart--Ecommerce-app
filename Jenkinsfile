@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB = "sahilkr1302"
-        IMAGE_TAG = "${BUILD_NUMBER}"
+        IMAGE_TAG = "test"
         KUBECONFIG = "C:\\Users\\91700\\.kube\\config"
     }
 
