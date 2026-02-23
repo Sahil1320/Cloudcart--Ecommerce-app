@@ -18,9 +18,9 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                bat "kubectl set image deployment/user-service user-container=user-service:{%IMAGE_TAG%}"
-                bat "kubectl set image deployment/product-service product-container=product-service:{%IMAGE_TAG%}"
-                bat "kubectl set image deployment/order-service order-container=order-service:{%IMAGE_TAG%}"
+                bat "kubectl set image deployment/user-service user-service=user-service:{%IMAGE_TAG%}"
+                bat "kubectl set image deployment/product-service product-service=product-service:{%IMAGE_TAG%}"
+                bat "kubectl set image deployment/order-service order-service=order-service:{%IMAGE_TAG%}"
             }
         }
 
